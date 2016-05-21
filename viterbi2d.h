@@ -15,7 +15,7 @@ struct Viterbi2DResult {
   size_t y;
 };
 
-Viterbi2DResult *Viterbi2D(HMM2D *hmm, Cache<Viterbi2DResult *> &cache, Cache<long double *> &probcache, size_t s, size_t t, size_t k);
-Viterbi2DResult *Viterbi2DMax(HMM2D *hmm, size_t s, size_t t, Cache<Viterbi2DResult *> &cache, Cache<long double *> &probcache);
+Viterbi2DResult *Viterbi2D(HMM2D *hmm, Cache<Viterbi2DResult *> &cache, ProbCache &probcache, size_t s, size_t t, size_t k);
+Viterbi2DResult *Viterbi2DMax(HMM2D *hmm, size_t s, size_t t, Cache<Viterbi2DResult *> &cache, ProbCache &probcache);
 int Reconstruct(HMM2D *hmm, Cache<Viterbi2DResult *> &cache, const char *filename);
 #endif

@@ -101,7 +101,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_viterbi_OBJECTS = viterbi.$(OBJEXT) viterbi2d.$(OBJEXT)
+am_viterbi_OBJECTS = viterbi.$(OBJEXT) viterbi2d.$(OBJEXT) \
+	cache.$(OBJEXT)
 viterbi_OBJECTS = $(am_viterbi_OBJECTS)
 am__DEPENDENCIES_1 =
 viterbi_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -191,11 +192,11 @@ AUTOMAKE = ${SHELL} /Users/ray/src/hmmkit/missing automake-1.15
 AWK = awk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O0
+CFLAGS = -g -O2
 CPPFLAGS = 
 CXX = g++
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O0
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DPACKAGE_NAME=\"hmmkit\" -DPACKAGE_TARNAME=\"hmmkit\" -DPACKAGE_VERSION=\"0.1.0\" -DPACKAGE_STRING=\"hmmkit\ 0.1.0\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DPACKAGE=\"hmmkit\" -DVERSION=\"0.1.0\"
 DEPDIR = .deps
@@ -280,7 +281,7 @@ top_srcdir = .
 zlib_CFLAGS = 
 zlib_LIBS = -lz
 AM_CXXFLAGS = $(libpng_CFLAGS) $(zlib_CFLAGS) $(eigen3_CFLAGS) $(CFLAGS) -std=c++0x
-viterbi_SOURCES = viterbi.cc viterbi2d.cc
+viterbi_SOURCES = viterbi.cc viterbi2d.cc cache.cc
 viterbi_LDADD = $(libpng_LIBS) $(zlib_LIBS) -ljson-c -lm $(LDFLAGS)
 all: all-am
 
@@ -372,6 +373,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/cache.Po
 include ./$(DEPDIR)/viterbi.Po
 include ./$(DEPDIR)/viterbi2d.Po
 

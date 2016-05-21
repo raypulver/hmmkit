@@ -40,6 +40,21 @@ class TripleArray {
   }
 };
 
+struct ProbCache {
+ private:
+  long double *data;
+  size_t len;
+  size_t states;
+ public:
+  ProbCache(size_t len, size_t states);
+  ~ProbCache();
+  long double &operator()(size_t len, size_t state);
+  void Put(size_t len, size_t state, long double d);
+  void Add(size_t len, size_t state, long double d);
+  long double &Get(size_t len, size_t state);
+};
+
+
 template <typename T>
 struct Cache {
   TripleArray<T> data;
@@ -49,11 +64,6 @@ struct Cache {
   }
   T *Get(size_t x, size_t y, size_t z) { return data(x, y, z); }
   void Put(size_t x, size_t y, size_t z, T el) { *data(x, y, z) = el; }
-  void CopyPut(size_t x, size_t y, size_t z, T el) {
-    T tmp = new typename std::remove_pointer<T>::type[1];
-    *tmp = *el;
-    *data(x, y, z) = tmp;
-  }
   size_t GetWidth() { return data.GetWidth(); }
   size_t GetHeight() { return data.GetHeight(); }
   size_t GetDepth() { return data.GetDepth(); }

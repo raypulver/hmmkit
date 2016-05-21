@@ -9,14 +9,16 @@
 
 using namespace std;
 
-void RandomWalk(HMM2D *hmm, bool isy, size_t start, size_t len, long double thresh,
-                function<void(size_t, long double prob, size_t sublen)> fn,
+void RandomWalk(HMM2D *hmm, bool isy, size_t start, size_t len,
+                long double thresh,
+                function<void(size_t, long double prob)> fn,
                 vector<HMM2D::State> &seq, long double prob) {
   double newprob;
-  fn(Sum(seq), prob, len - seq.size());
-  if (len != seq.size()) {
+  if (len == seq.size()) {
+    fn(Sum(seq), prob);
+  } else {
     for (size_t i = 0; i < hmm->states.size(); ++i) {
-      if (isy)
+      if (!isy)
         newprob = prob * hmm->ax(hmm->state_map[seq.back()], i);
       else
         newprob = prob * hmm->ay(hmm->state_map[seq.back()], i);
@@ -29,23 +31,22 @@ void RandomWalk(HMM2D *hmm, bool isy, size_t start, size_t len, long double thre
   }
 }
 
-void RandomWalk(HMM2D *hmm, bool isy, size_t start, size_t len, long double thresh,
-                function<void(size_t, long double prob, size_t sublen)> fn) {
+void RandomWalk(HMM2D *hmm, bool isy, size_t start, size_t len,
+                long double thresh,
+                function<void(size_t, long double prob)> fn) {
   vector<HMM2D::State> seq;
   long double prob = 1;
   seq.push_back(hmm->states[start]);
   RandomWalk(hmm, isy, start, len, thresh, fn, seq, prob);
 }
-long double Prob(HMM2D *hmm, Cache<Viterbi2DResult *> &cache, Cache<long double *> &probcache, size_t s,
-                 size_t t, size_t k, bool isy) {
+
+long double Prob(HMM2D *hmm, Cache<Viterbi2DResult *> &cache,
+                 ProbCache &probcache, size_t s, size_t t, size_t k, bool isy) {
   long total = 0;
   size_t st;
-  double prb = 0, max = 0;
+  long double prb = 0, max = 0;
   long double *retval;
   Viterbi2DResult *result;
-  if ((retval = *probcache.Get(1, hmm->observations.size() - t + 1, k))) {
-    return *retval;
-  }
   for (size_t i = 0; i < t; ++i) {
     st = 0;
     for (size_t n = 0; n < hmm->states.size(); ++n) {
@@ -60,15 +61,19 @@ long double Prob(HMM2D *hmm, Cache<Viterbi2DResult *> &cache, Cache<long double 
     max = 0;
   }
   total = hmm->observations[s] - total;
-  if (total < 0) return 0;
+  if (total <= 0) {
+   if (!k) return 1;
+   else return 0;
+  }
   long double mean = 0, var = 0, totalprob = 0;
   size_t count = 0;
   RandomWalk(hmm, isy, k, hmm->observations.size() - t + 1, 1e-10,
-             [&](size_t sum, long double prob, size_t len) {
-               probcache.CopyPut(1, len, k, &prob);
-               if (len == hmm->observations.size() - t + 1 && sum == total) {
-                 cout << sum << " " << prob << " " << total << endl;
+             [&](size_t sum, long double prob) {
+               if (sum == total) {
+                 cout << total << " " << sum << endl;
                  prb += prob;
+               } else {
+                 cout << total << " " << sum << endl;
                }
              });
   return prb;
@@ -79,7 +84,8 @@ Viterbi2DResult::~Viterbi2DResult() {
 }
 
 Viterbi2DResult *Viterbi2DMax(HMM2D *hmm, size_t s, size_t t,
-                              Cache<Viterbi2DResult *> &cache, Cache<long double *> &probcache) {
+                              Cache<Viterbi2DResult *> &cache,
+                              ProbCache &probcache) {
   size_t i;
   double max;
   Viterbi2DResult *result, *retval;
@@ -96,8 +102,8 @@ Viterbi2DResult *Viterbi2DMax(HMM2D *hmm, size_t s, size_t t,
   return retval;
 }
 
-Viterbi2DResult *Viterbi2D(HMM2D *hmm, Cache<Viterbi2DResult *> &cache, Cache<long double *> &probcache,
-                           size_t s, size_t t, size_t k) {
+Viterbi2DResult *Viterbi2D(HMM2D *hmm, Cache<Viterbi2DResult *> &cache,
+                           ProbCache &probcache, size_t s, size_t t, size_t k) {
   Viterbi2DResult *retval, *xviterbi, *yviterbi;
   long double max, overall, tmp;
   size_t x, y;

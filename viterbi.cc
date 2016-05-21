@@ -64,9 +64,9 @@ void solve(bool reconstructit) {
   HMM2D *hmm = HMM2D::FromPNG(png);
   double start = clock();
   Cache<Viterbi2DResult *> cache(png->GetWidth(), png->GetHeight(), hmm->states.size());
-  Cache<long double *> probcache(1, png->GetWidth(), hmm->states.size());
+  ProbCache probcache(png->GetWidth(), hmm->states.size());
   Viterbi2DMax(hmm, png->GetWidth() - 1, png->GetHeight() - 1, cache, probcache);
-  hmm->Print();
+  hmm->PrintObs();
   cout << clock() - start << endl;
   if (reconstructit) cout << Reconstruct(hmm, cache, "reconstruction.png") << endl;
 }
