@@ -23,7 +23,7 @@ static enum class Mode {
 
 static DieClass Die;
 
-void generate(int dim) {
+void generate_triangle(int dim) {
   if (dim <= 0) Die("need a positive dimension");
   PNG<PNG_FORMAT_GA> png(dim, dim);
   PNG<PNG_FORMAT_GA>::Pixel *buf = png.GetPixelArray();
@@ -41,13 +41,34 @@ void generate(int dim) {
   png.Write("out.png");
 }
 
-void solve(bool reconstruct) {
+void generate(int dim) {
+  if (dim <= 0) Die("need a positive dimension");
+  PNG<PNG_FORMAT_GA> png(dim, dim);
+  PNG<PNG_FORMAT_GA>::Pixel *buf = png.GetPixelArray();
+  for (size_t i = 0; i < dim; ++i) {
+    for (size_t j = 0; j < dim; ++j) {
+      if (j > dim/4 && j < dim/2 && i > dim/4 && i < dim/2) {
+        buf[i*dim + j].g = 170;
+        buf[i*dim + j].a = 0xff;
+      } else if (j > dim/6 && j < dim/2 && i > dim/6 && i < dim/2) {
+        buf[i*dim + j].g = 120;
+        buf[i*dim + j].a = 0xff;
+      }
+    }
+  }
+  png.Write("out.png");
+}
+
+void solve(bool reconstructit) {
   PNG<PNG_FORMAT_GA> *png = PNG<PNG_FORMAT_GA>::FromFile("out.png");
   HMM2D *hmm = HMM2D::FromPNG(png);
   double start = clock();
-  cout << png->GetWidth() << " " << png->GetHeight() << endl;
-  Viterbi2DMax(hmm, png->GetWidth(), png->GetHeight());
+  Cache<Viterbi2DResult *> cache(png->GetWidth(), png->GetHeight(), hmm->states.size());
+  Cache<long double *> probcache(1, png->GetWidth(), hmm->states.size());
+  Viterbi2DMax(hmm, png->GetWidth() - 1, png->GetHeight() - 1, cache, probcache);
+  hmm->Print();
   cout << clock() - start << endl;
+  if (reconstructit) cout << Reconstruct(hmm, cache, "reconstruction.png") << endl;
 }
 
 int main(int argc, char **argv) {

@@ -110,6 +110,18 @@ class HMM2D {
     retval->RowNormalize();
     return retval;
   }
+  void Print() {
+    std::cout << "[ ";
+    for (auto it = pix.begin(); it != pix.end(); it++) {
+      std::cout << *it << " ";
+    }
+    std::cout << "]" << std::endl;
+    std::cout << "[ ";
+    for (auto it = piy.begin(); it != piy.end(); it++) {
+      std::cout << *it << " ";
+    }
+    std::cout << "]" << std::endl;
+  }
 };
     
 #endif

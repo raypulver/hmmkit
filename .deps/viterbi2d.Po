@@ -314,7 +314,8 @@ viterbi2d.o: viterbi2d.cc viterbi2d.h /usr/include/unistd.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iostream \
   pixelizer.h /usr/local/include/libpng16/png.h \
   /usr/local/include/libpng16/pnglibconf.h \
-  /usr/local/include/libpng16/pngconf.h /usr/include/setjmp.h cache.h
+  /usr/local/include/libpng16/pngconf.h /usr/include/setjmp.h cache.h \
+  sum.h
 
 viterbi2d.h:
 
@@ -1081,3 +1082,5 @@ pixelizer.h:
 /usr/include/setjmp.h:
 
 cache.h:
+
+sum.h:
