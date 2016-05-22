@@ -67,13 +67,13 @@ long double Prob(HMM2D *hmm, Cache<Viterbi2DResult *> &cache,
   }
   long double mean = 0, var = 0, totalprob = 0;
   size_t count = 0;
-  RandomWalk(hmm, isy, k, hmm->observations.size() - t + 1, 1e-10,
+  RandomWalk(hmm, isy, k, hmm->observations.size() - t + 1, 1e-20,
              [&](size_t sum, long double prob) {
                if (sum == total) {
-                 cout << total << " " << sum << endl;
+                 cout << s << " " << total << " " << sum << endl;
                  prb += prob;
                } else {
-                 cout << total << " " << sum << endl;
+                 cout << s << " " << total << " " << sum << endl;
                }
              });
   return prb;
